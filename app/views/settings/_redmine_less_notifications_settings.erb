@@ -1,0 +1,8 @@
+<%- priority_ids = IssuePriority.all %>
+<fieldset>
+    <legend><%=t('redmine_less_notifications.whitelisted_select_hint')%></legend>
+    <p>
+      <%= label_tag('settings[whitelisted_priority_ids]', t('redmine_less_notifications.label_whitelisted_priorities')) %>
+      <%= select_tag('settings[whitelisted_priority_ids]', options_for_select(priority_ids.collect{|c| [c.name, c.id]}, (@settings['whitelisted_priority_ids'] || [])), :multiple => true) %>
+    </p>
+</fieldset>
