@@ -17,6 +17,11 @@ module RedmineLessNotifications
       whitelisted_priority_ids.include? self.priority_id.to_s
     end
 
+    def previous_assignees
+      previous_assignee_ids = JournalDetail.where(journal: journals).where(prop_key: :assigned_to_id).pluck(:value).uniq
+      Principal.where(id: previous_assignee_ids)
+    end
+
     def notified_users_with_remove_uninvolved
       notified_users_without_remove_uninvolved.tap do |users|
         # dont filter reciepients and forcefully add those who muted their notifications if the issue has whitelisted priority
@@ -32,8 +37,8 @@ module RedmineLessNotifications
             involved += (assigned_to.is_a?(Group) ? assigned_to.users : [assigned_to])
           end
 
-          if assigned_to_was
-            involved += (assigned_to_was.is_a?(Group) ? assigned_to_was.users : [assigned_to_was])
+          previous_assignees.each do |prev|
+            involved += (prev.is_a?(Group) ? prev.users : [prev])
           end
 
           #issue watchers also should be notified
@@ -41,9 +46,8 @@ module RedmineLessNotifications
 
           # cleanup the recipients list if issue does not have whitelisted priority
           users.reject! do |user|
-            user_permissions = user.roles_for_project(project).collect{|r| r.permissions}.flatten!.uniq
+            user_permissions = user.roles_for_project(project).collect{|r| r.permissions}.flatten!
             rejectable = (user_permissions.include? :suppress_unrelated_notifications) && (involved.exclude? user)
-            byebug
             logger.info "LessNotifications: removing uninvolved recipient from issue email notification: #{user.login}" if rejectable
             rejectable
           end
