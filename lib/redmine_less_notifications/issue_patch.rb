@@ -48,7 +48,7 @@ module RedmineLessNotifications
           users.reject! do |user|
             user_permissions = user.roles_for_project(project).collect{|r| r.permissions}.flatten!
             rejectable = (user_permissions.include? :suppress_unrelated_notifications) && (involved.exclude? user)
-            logger.info "LessNotifications: removing uninvolved recipient from issue email notification: #{user.login}" if rejectable
+            logger.info "LessNotifications: removing uninvolved recipient from issue #{self.id} email notification: #{user.login}" if rejectable
             rejectable
           end
         end
