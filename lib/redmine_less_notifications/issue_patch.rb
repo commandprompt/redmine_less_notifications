@@ -46,7 +46,8 @@ module RedmineLessNotifications
 
           # cleanup the recipients list if issue does not have whitelisted priority
           users.reject! do |user|
-            user_permissions = user.roles_for_project(project).collect{|r| r.permissions}.flatten!
+            #user can have no permissions at all in some cases, thus the guard initialization
+            user_permissions = user.roles_for_project(project).collect{|r| r.permissions}.flatten! || []
             rejectable = (user_permissions.include? :suppress_unrelated_notifications) && (involved.exclude? user)
             logger.info "LessNotifications: removing uninvolved recipient from issue #{self.id} email notification: #{user.login}" if rejectable
             rejectable
