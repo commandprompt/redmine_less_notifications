@@ -41,6 +41,9 @@ module RedmineLessNotifications
             involved += (prev.is_a?(Group) ? prev.users : [prev])
           end
 
+          #find the users which did something on the issue (added notes, attachments, changed attributes etc)
+          involved += User.where(id: journals.pluck(:user_id).uniq)
+
           #issue watchers also should be notified
           involved += User.find(watcher_user_ids)
 
