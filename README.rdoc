@@ -1,3 +1,4 @@
 = redmine_less_notifications
 
-Description goes here
+This plugin reduces the amount of issue update emails by notifying only the involved users (those who ever touched the issues, watchers, previous assignees etc.)
+The plugin allows to define a priority white list. Issues with whitelisted priorities will send notifications as usual.
