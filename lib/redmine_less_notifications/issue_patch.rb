@@ -8,7 +8,8 @@ module RedmineLessNotifications
 
     def self.included(base)
       base.class_eval do
-        alias_method_chain :notified_users, :remove_uninvolved
+        alias_method :notified_users_without_remove_uninvolved, :notified_users
+        alias_method :notified_users, :notified_users_with_remove_uninvolved
       end
     end
 
@@ -46,7 +47,6 @@ module RedmineLessNotifications
 
           #issue watchers also should be notified
           involved += User.find(watcher_user_ids)
-
           # cleanup the recipients list if issue does not have whitelisted priority
           users.reject! do |user|
             #user can have no permissions at all in some cases, thus the guard initialization
